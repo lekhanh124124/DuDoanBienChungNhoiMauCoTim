@@ -6,6 +6,7 @@ pip install -r docs/requirements.txt
     -   /processed chứa bộ dữ liệu được gộp và tiền xử lí từ /raw
 
 # /src/ là nơi chứa code cho các nhiệm vụ chính
+    -   data_preprocessing.py: mục đích là xử lý dữ liệu thiếu và tổng hợp các dữ liệu lại
 
 # /reports/ là nơi chứa word và ppt đã được tổng hợp và sẽ dùng để trình bày.
 
