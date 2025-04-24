@@ -1,17 +1,25 @@
 import pandas as pd
 import numpy as np
+import os
 from sklearn.impute import SimpleImputer
 
-# Định nghĩa đường dẫn đến các file dữ liệu
+# Đặt thư mục làm việc là thư mục chứa file mã
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+print("Thư mục làm việc hiện tại:", os.getcwd())
+
+# Định nghĩa đường dẫn tương đối đến các file dữ liệu
 data_paths = {
-    'cleveland': r'E:\workspace\DataMining\DoAn\data\raw\processed.cleveland.data',
-    'hungarian': r'E:\workspace\DataMining\DoAn\data\raw\processed.hungarian.data',
-    'switzerland': r'E:\workspace\DataMining\DoAn\data\raw\processed.switzerland.data',
-    'va': r'E:\workspace\DataMining\DoAn\data\raw\processed.va.data'
+    'cleveland': r'..\data\raw\processed.cleveland.data',
+    'hungarian': r'..\data\raw\processed.hungarian.data',
+    'switzerland': r'..\data\raw\processed.switzerland.data',
+    'va': r'..\data\raw\processed.va.data'
 }
 
 # Đường dẫn để lưu file kết quả
-output_path = r'E:\workspace\DataMining\DoAn\data\processed\processed_data.csv'
+output_path = r'..\data\processed\processed_data.csv'
+
+# Tạo thư mục đầu ra nếu chưa tồn tại
+os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
 # Định nghĩa tên các cột
 columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 
@@ -20,6 +28,8 @@ columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach',
 # Bước 1: Load dữ liệu từ 4 file
 dataframes = {}
 for name, path in data_paths.items():
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"File {path} không tồn tại. Kiểm tra đường dẫn.")
     dataframes[name] = pd.read_csv(path, header=None, names=columns)
 
 # Bước 2: Xử lý dữ liệu thiếu
