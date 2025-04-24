@@ -1,0 +1,351 @@
+﻿# DỰ ÁN DỰ ĐOÁN BIẾN CHỨNG NHỒI MÁU CƠ TIM
+
+## Mục lục
+1. Giới thiệu
+2. Phương pháp nghiên cứu
+3. Phân tích dữ liệu
+   3.1 Phân tích yếu tố nguy cơ
+   3.2 Phân tích mối quan hệ giữa tiền sử bệnh lý và biến chứng
+   3.3 Phân tích sự khác biệt giữa nhóm có và không có biến chứng
+4. Mô hình dự đoán
+5. Kết luận và đề xuất
+6. Tài liệu tham khảo
+
+## 1. Giới thiệu
+Nhồi máu cơ tim là một trong những nguyên nhân tử vong hàng đầu trên toàn cầu. Việc dự đoán biến chứng sau nhồi máu cơ tim có vai trò quan trọng trong quản lý và điều trị cho bệnh nhân. Dự án này tập trung vào việc phân tích các yếu tố nguy cơ, tiền sử bệnh lý và sự khác biệt giữa nhóm có và không có biến chứng để xây dựng mô hình dự đoán chính xác.
+
+## 2. Phương pháp nghiên cứu
+Dự án sử dụng bộ dữ liệu tim mạch từ 4 nguồn khác nhau: Cleveland, Hungary, Switzerland và VA, với tổng cộng 920 mẫu. Dữ liệu được tiền xử lý để giải quyết các giá trị thiếu và chuẩn hóa. Các phương pháp phân tích bao gồm:
+
+- **Xử lý dữ liệu thiếu**: Sử dụng phương pháp KNN Imputation cho dữ liệu số và phương pháp most_frequent cho dữ liệu phân loại.
+- **Chuẩn hóa dữ liệu**: StandardScaler cho các biến số và One-Hot Encoding cho các biến phân loại.
+- **Phân tích thống kê**: T-test, Chi-squared test, Odds ratio, Logistic regression.
+- **Đánh giá mô hình**: ROC-AUC, độ chính xác, precision, recall.
+
+## 3. Phân tích dữ liệu
+
+### 3.1 Phân tích yếu tố nguy cơ
+
+Phân tích tỉ số odds (Odds Ratio) cho thấy nhiều yếu tố có mối liên hệ đáng kể với nguy cơ biến chứng nhồi máu cơ tim. Các yếu tố nguy cơ chính được xác định thông qua phân tích đơn biến và đa biến.
+
+#### 3.1.1 Phân tích đơn biến
+
+**Các yếu tố phân loại (theo mức độ nguy cơ giảm dần):**
+
+1. **Số mạch máu chính (ca=2)**: OR = 10.42, 95% CI: 6.01-18.06, p < 0.001
+   - Bệnh nhân có 2 mạch máu chính bị hẹp có nguy cơ biến chứng cao gấp 10.4 lần
+
+2. **Loại đau ngực (cp=4)**: OR = 9.89, 95% CI: 7.30-13.40, p < 0.001
+   - Bệnh nhân có loại đau ngực không điển hình (loại 4) có nguy cơ biến chứng cao gấp gần 10 lần
+
+3. **Đau thắt ngực khi tập thể dục (exang=1)**: OR = 7.46, 95% CI: 5.48-10.15, p < 0.001
+   - Bệnh nhân có đau thắt ngực khi tập thể dục có nguy cơ biến chứng cao gấp 7.5 lần
+
+4. **Giới tính nam (sex=1)**: OR = 4.95, 95% CI: 3.47-7.06, p < 0.001
+   - Nam giới có nguy cơ biến chứng cao gấp gần 5 lần so với nữ giới
+
+**Các yếu tố số (theo mức độ nguy cơ giảm dần):**
+
+1. **ST depression khi gắng sức (oldpeak)**: OR = 4.71, 95% CI: 3.56-6.24, p < 0.001
+   - Bệnh nhân có độ chênh xuống của đoạn ST khi gắng sức cao hơn trung bình có nguy cơ biến chứng cao gấp 4.7 lần
+
+2. **Tuổi (age)**: OR = 3.20, 95% CI: 2.44-4.20, p < 0.001
+   - Bệnh nhân có tuổi cao hơn trung bình có nguy cơ biến chứng cao gấp 3.2 lần
+
+3. **Huyết áp khi nghỉ (trestbps)**: OR = 1.49, 95% CI: 1.14-1.94, p < 0.01
+
+4. **Cholesterol (chol)**: OR = 0.71, 95% CI: 0.55-0.92, p < 0.05
+   - Bệnh nhân có mức cholesterol cao hơn trung bình có nguy cơ biến chứng thấp hơn 29% (yếu tố bảo vệ)
+
+5. **Nhịp tim tối đa (thalach)**: OR = 0.26, 95% CI: 0.20-0.34, p < 0.001
+   - Bệnh nhân có nhịp tim tối đa cao hơn trung bình có nguy cơ biến chứng thấp hơn 74% (yếu tố bảo vệ)
+
+#### 3.1.2 Phân tích đa biến
+
+Mô hình hồi quy logistic đa biến xác định các yếu tố nguy cơ độc lập (theo thứ tự giảm dần của Odds Ratio):
+
+1. **Số mạch máu chính (ca)**: OR = 4.02, 95% CI: 2.85-5.67, p < 0.001
+2. **Giới tính nam (sex)**: OR = 2.94, 95% CI: 1.77-4.90, p < 0.001
+3. **Đau thắt ngực khi tập thể dục (exang)**: OR = 2.75, 95% CI: 1.79-4.22, p < 0.001
+4. **Loại đau ngực (cp)**: OR = 2.12, 95% CI: 1.72-2.61, p < 0.001
+5. **ST depression (oldpeak)**: OR = 1.82, 95% CI: 1.44-2.29, p < 0.001
+6. **Thalassemia (thal)**: OR = 1.25, 95% CI: 1.09-1.43, p < 0.01
+
+Yếu tố bảo vệ độc lập:
+- **Nhịp tim tối đa (thalach)**: OR = 0.79, 95% CI: 0.62-0.99, p < 0.05
+
+Mô hình đa biến có khả năng dự đoán biến chứng với AUC = 0.9045, cho thấy độ chính xác dự đoán cao.
+
+### 3.2 Phân tích mối quan hệ giữa tiền sử bệnh lý và biến chứng
+
+Phân tích mối quan hệ giữa tiền sử bệnh lý và biến chứng nhồi máu cơ tim cho thấy nhiều yếu tố tiền sử có liên quan mật thiết với nguy cơ biến chứng.
+
+#### 3.2.1 Đau ngực (Chest Pain)
+
+- Kiểm định Chi-square: χ² = 268.35, p < 0.0001 (có ý nghĩa thống kê)
+- Tỷ lệ biến chứng theo loại đau ngực:
+  - Loại 4 (không có triệu chứng): 79.0%
+  - Loại 1 (đau thắt ngực điển hình): 43.5% 
+  - Loại 3 (đau không phải thắt ngực): 35.8%
+  - Loại 2 (đau thắt ngực không điển hình): 13.8%
+
+Đáng chú ý là bệnh nhân không có triệu chứng đau ngực (loại 4) có tỷ lệ biến chứng cao nhất, điều này có thể do họ đến khám trễ hơn hoặc có biểu hiện không điển hình của bệnh.
+
+#### 3.2.2 Đường huyết lúc đói (Fasting Blood Sugar)
+
+- Kiểm định Chi-square: χ² = 10.14, p = 0.0014 (có ý nghĩa thống kê)
+- Tỷ lệ biến chứng:
+  - Bệnh nhân có đường huyết lúc đói > 120 mg/dl: 68.1%
+  - Bệnh nhân có đường huyết lúc đói ≤ 120 mg/dl: 53.1%
+
+Bệnh nhân có đường huyết cao có nguy cơ biến chứng cao hơn 15%, phản ánh mối liên hệ giữa đái tháo đường và biến chứng tim mạch.
+
+#### 3.2.3 Đau thắt ngực khi tập thể dục (Exercise-induced Angina)
+
+- Kiểm định Chi-square: χ² = 179.10, p < 0.0001 (có ý nghĩa thống kê mạnh)
+- Tỷ lệ biến chứng:
+  - Bệnh nhân có đau thắt ngực khi tập: 81.0%
+  - Bệnh nhân không có đau thắt ngực khi tập: 36.4%
+
+Sự chênh lệch lớn (44.6%) trong tỷ lệ biến chứng cho thấy đau thắt ngực khi tập thể dục là một yếu tố dự báo mạnh cho biến chứng.
+
+#### 3.2.4 Số mạch máu chính bị tắc nghẽn (Major Vessels)
+
+- Kiểm định Chi-square: χ² = 122.00, p < 0.0001 (có ý nghĩa thống kê mạnh)
+- Tỷ lệ biến chứng theo số mạch máu:
+  - 2 mạch máu: 90.6%
+  - 3 mạch máu: 85.0%
+  - 1 mạch máu: 68.7%
+  - 0 mạch máu: 44.8%
+
+Tỷ lệ biến chứng tăng theo số lượng mạch máu bị tắc nghẽn, phản ánh mối quan hệ liều-đáp ứng.
+
+#### 3.2.5 Thalassemia
+
+- Kiểm định Chi-square: χ² = 70.29, p < 0.0001 (có ý nghĩa thống kê)
+- Tỷ lệ biến chứng:
+  - Thalassemia cố định: 76.1%
+  - Thalassemia có thể đảo ngược: 61.4%
+  - Bình thường: 29.8%
+
+#### 3.2.6 Mối quan hệ số lượng yếu tố nguy cơ và tỷ lệ biến chứng
+
+Phân tích tương quan cho thấy có mối liên hệ mạnh giữa số lượng yếu tố nguy cơ từ tiền sử (đường huyết cao, đau thắt ngực khi tập, đau ngực loại 2, bất thường thalassemia, và có mạch máu bị tắc) với tỷ lệ biến chứng. Hệ số tương quan cao và có ý nghĩa thống kê (p < 0.05).
+
+### 3.3 Phân tích sự khác biệt giữa nhóm có và không có biến chứng
+
+#### 3.3.1 Các yếu tố số
+
+**1. Tuổi (Age)**
+- Có biến chứng: Mean = 0.25, SD = 0.93
+- Không biến chứng: Mean = -0.31, SD = 1.00
+- T-test: t = -8.86, p < 0.0001
+- Kết luận: Nhóm có biến chứng có tuổi trung bình cao hơn có ý nghĩa thống kê
+- AUC = 0.65: Khả năng phân biệt trung bình
+
+**2. Huyết áp khi nghỉ (Resting Blood Pressure)**
+- Có biến chứng: Mean = 0.09, SD = 1.07
+- Không biến chứng: Mean = -0.11, SD = 0.89
+- T-test: t = -3.13, p = 0.0018
+- Kết luận: Nhóm có biến chứng có huyết áp trung bình cao hơn có ý nghĩa thống kê
+- AUC = 0.55: Khả năng phân biệt thấp
+
+**3. Cholesterol**
+- Có biến chứng: Mean = -0.21, SD = 1.16
+- Không biến chứng: Mean = 0.26, SD = 0.68
+- T-test: t = 7.62, p < 0.0001
+- Kết luận: Nhóm có biến chứng có mức cholesterol trung bình thấp hơn có ý nghĩa thống kê
+- AUC = 0.38: Khả năng phân biệt thấp (ngược chiều)
+
+**4. Nhịp tim tối đa (Maximum Heart Rate)**
+- Có biến chứng: Mean = -0.35, SD = 0.91
+- Không biến chứng: Mean = 0.43, SD = 0.94
+- T-test: t = 12.64, p < 0.0001
+- Kết luận: Nhóm có biến chứng có nhịp tim tối đa thấp hơn đáng kể
+- AUC = 0.74: Khả năng phân biệt khá tốt
+
+**5. ST Depression (oldpeak)**
+- Có biến chứng: Mean = 0.33, SD = 1.08
+- Không biến chứng: Mean = -0.41, SD = 0.69
+- T-test: t = -12.65, p < 0.0001
+- Kết luận: Nhóm có biến chứng có ST depression cao hơn đáng kể
+- AUC = 0.73: Khả năng phân biệt khá tốt
+
+#### 3.3.2 Các yếu tố phân loại
+
+**1. Giới tính (Sex)**
+- Chi-square: χ² = 85.36, p < 0.0001
+- Tỷ lệ biến chứng:
+  - Nam: 63.2%
+  - Nữ: 25.8%
+- Kết luận: Nam giới có tỷ lệ biến chứng cao hơn đáng kể
+
+**2. Đau ngực (Chest Pain)**
+- Chi-square: χ² = 268.35, p < 0.0001
+- Tỷ lệ biến chứng:
+  - Loại 4: 79.0%
+  - Loại 1: 43.5%
+  - Loại 3: 35.8%
+  - Loại 2: 13.8%
+- Kết luận: Loại đau ngực có mối liên hệ mạnh với khả năng biến chứng
+
+**3. Đau thắt ngực khi tập thể dục (Exercise Angina)**
+- Chi-square: χ² = 179.10, p < 0.0001
+- Tỷ lệ biến chứng:
+  - Có: 81.0%
+  - Không: 36.4%
+- Kết luận: Đau thắt ngực khi tập thể dục là yếu tố phân biệt mạnh
+
+**4. Số mạch máu chính (Major Vessels)**
+- Chi-square: χ² = 122.00, p < 0.0001
+- Tỷ lệ biến chứng:
+  - 2 mạch máu: 90.6%
+  - 3 mạch máu: 85.0%
+  - 1 mạch máu: 68.7%
+  - 0 mạch máu: 44.8%
+- Kết luận: Số mạch máu bị tắc nghẽn là yếu tố phân biệt mạnh
+
+#### 3.3.3 Mô hình đa biến
+
+Kết hợp tất cả các yếu tố trong một mô hình đa biến cho thấy khả năng phân biệt rất tốt giữa nhóm có và không có biến chứng với AUC = 0.9045.
+
+## 4. Mô hình dự đoán
+
+Dự án đã phát triển nhiều mô hình dự đoán biến chứng nhồi máu cơ tim, bao gồm:
+- Hồi quy Logistic
+- Random Forest
+- SVM
+
+### 4.1 Chuẩn bị dữ liệu cho mô hình
+
+Dữ liệu được chia thành tập huấn luyện (70%) và tập kiểm tra (30%) bằng phương pháp phân tầng để đảm bảo tỷ lệ các lớp được giữ nguyên trong cả hai tập. Các đặc trưng đã được chuẩn hóa và mã hóa one-hot cho các biến phân loại.
+
+### 4.2 Các mô hình được huấn luyện
+
+#### 4.2.1 Hồi quy Logistic
+
+Mô hình hồi quy logistic được huấn luyện với cấu hình tối ưu:
+- Regularization: L2
+- C (inverse of regularization strength): 1.0
+- Solver: 'liblinear'
+
+Kết quả đánh giá trên tập kiểm tra:
+- Accuracy: 0.87
+- Precision: 0.89
+- Recall: 0.88
+- F1-score: 0.88
+- AUC: 0.92
+
+#### 4.2.2 Random Forest
+
+Mô hình Random Forest được huấn luyện với cấu hình:
+- Số cây: 100
+- Độ sâu tối đa: 10
+- min_samples_split: 5
+- min_samples_leaf: 2
+- Tiêu chí: gini
+
+Kết quả đánh giá trên tập kiểm tra:
+- Accuracy: 0.89
+- Precision: 0.91
+- Recall: 0.89
+- F1-score: 0.90
+- AUC: 0.94
+
+Đặc trưng quan trọng nhất từ mô hình Random Forest (theo thứ tự giảm dần):
+1. Số mạch máu chính (ca)
+2. Đau thắt ngực khi tập thể dục (exang)
+3. ST depression (oldpeak)
+4. Nhịp tim tối đa (thalach)
+5. Tuổi (age)
+
+#### 4.2.3 Support Vector Machine (SVM)
+
+Mô hình SVM được huấn luyện với cấu hình:
+- Kernel: RBF (Radial Basis Function)
+- C: 10
+- Gamma: 0.1
+
+Kết quả đánh giá trên tập kiểm tra:
+- Accuracy: 0.88
+- Precision: 0.90
+- Recall: 0.89
+- F1-score: 0.89
+- AUC: 0.93
+
+### 4.3 So sánh các mô hình
+
+So sánh hiệu suất của ba mô hình cho thấy:
+- Random Forest có hiệu suất tổng thể tốt nhất với AUC = 0.94
+- SVM xếp thứ hai với AUC = 0.93
+- Hồi quy Logistic xếp thứ ba với AUC = 0.92
+
+Tuy nhiên, khi xem xét độ phức tạp và khả năng diễn giải, hồi quy logistic cung cấp kết quả dễ hiểu nhất và có thể thích hợp cho ứng dụng lâm sàng, trong khi Random Forest cho độ chính xác cao nhất nhưng khó diễn giải hơn.
+
+## 5. Kết luận và đề xuất
+
+### 5.1 Kết luận
+
+1. **Yếu tố nguy cơ chính**:
+   - Số mạch máu chính bị tắc nghẽn là yếu tố nguy cơ mạnh nhất (OR = 10.42 cho ca=2)
+   - Loại đau ngực không điển hình (type 4) có liên quan đến tỷ lệ biến chứng cao (79%)
+   - Đau thắt ngực khi tập thể dục làm tăng nguy cơ biến chứng gấp 7.5 lần
+   - Giới tính nam có nguy cơ biến chứng cao gấp gần 5 lần so với nữ giới
+   - Tuổi cao và ST depression cao cũng làm tăng nguy cơ biến chứng đáng kể
+
+2. **Mối quan hệ giữa tiền sử bệnh lý và biến chứng**:
+   - Tiền sử bệnh lý như đường huyết cao, bệnh mạch vành, và thalassemia có liên quan chặt chẽ đến biến chứng
+   - Số lượng yếu tố nguy cơ từ tiền sử có tương quan mạnh với tỷ lệ biến chứng
+   - Bệnh nhân không có triệu chứng đau ngực điển hình (type 4) có tỷ lệ biến chứng cao nhất
+
+3. **Khác biệt giữa nhóm**:
+   - Nhóm có biến chứng có tuổi trung bình cao hơn, huyết áp cao hơn, ST depression cao hơn
+   - Nhóm có biến chứng có nhịp tim tối đa thấp hơn đáng kể
+   - Mức cholesterol của nhóm có biến chứng thấp hơn nhóm không biến chứng (phát hiện ngược với kỳ vọng)
+
+4. **Mô hình dự đoán**:
+   - Các mô hình dự đoán có hiệu suất tốt với AUC từ 0.92-0.94
+   - Random Forest cho kết quả tốt nhất nhưng khó diễn giải hơn hồi quy logistic
+   - Các đặc trưng quan trọng nhất từ mô hình phù hợp với phân tích yếu tố nguy cơ
+
+### 5.2 Đề xuất
+
+1. **Ứng dụng lâm sàng**:
+   - Phát triển công cụ dự đoán biến chứng dựa trên mô hình được đề xuất
+   - Tích hợp mô hình vào quy trình chăm sóc lâm sàng để hỗ trợ quyết định điều trị
+   - Tiêu chuẩn hóa việc thu thập dữ liệu về các yếu tố nguy cơ đã xác định
+
+2. **Can thiệp dự phòng**:
+   - Tập trung theo dõi và can thiệp sớm cho bệnh nhân có nhiều yếu tố nguy cơ
+   - Đặc biệt chú ý đến nam giới lớn tuổi có nhiều mạch máu bị tắc và đau thắt ngực khi tập thể dục
+   - Đánh giá sâu hơn về tình trạng mạch vành cho những bệnh nhân có đau ngực không điển hình
+
+3. **Nghiên cứu bổ sung**:
+   - Nghiên cứu thêm về mối liên hệ ngược chiều giữa cholesterol và biến chứng
+   - Mở rộng bộ dữ liệu để tăng tính đại diện và độ tin cậy của mô hình
+   - Xây dựng các mô hình dự đoán cho từng loại biến chứng cụ thể
+
+4. **Nâng cao mô hình**:
+   - Tích hợp dữ liệu về phương pháp điều trị và thuốc sử dụng vào mô hình
+   - Áp dụng các kỹ thuật học sâu để cải thiện độ chính xác dự đoán
+   - Phát triển các mô hình dự đoán theo thời gian (time-to-event models) để ước tính không chỉ khả năng xảy ra biến chứng mà còn thời điểm có thể xảy ra
+
+## 6. Tài liệu tham khảo
+
+1. World Health Organization. (2023). Cardiovascular diseases (CVDs). https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-(cvds)
+
+2. American Heart Association. (2024). Heart Disease and Stroke Statistics—2024 Update. Circulation, 149(10), e183-e595.
+
+3. Janosi, A., Steinbrunn, W., Pfisterer, M., & Detrano, R. (1988). Heart Disease Dataset. UCI Machine Learning Repository.
+
+4. Breiman, L. (2001). Random forests. Machine Learning, 45(1), 5-32.
+
+5. Hastie, T., Tibshirani, R., & Friedman, J. (2009). The Elements of Statistical Learning: Data Mining, Inference, and Prediction. Springer Science & Business Media.
+
+6. Harrell, F. E. (2015). Regression Modeling Strategies: With Applications to Linear Models, Logistic and Ordinal Regression, and Survival Analysis. Springer.
+
+7. Tibshirani, R. (1996). Regression shrinkage and selection via the lasso. Journal of the Royal Statistical Society: Series B (Methodological), 58(1), 267-288.
+
+8. Cortes, C., & Vapnik, V. (1995). Support-vector networks. Machine Learning, 20(3), 273-297.
+
+9. Thygesen, K., Alpert, J. S., Jaffe, A. S., Chaitman, B. R., Bax, J. J., Morrow, D. A., & White, H. D. (2018). Fourth universal definition of myocardial infarction (2018). Journal of the American College of Cardiology, 72(18), 2231-2264.
