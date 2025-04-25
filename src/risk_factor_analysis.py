@@ -1,3 +1,5 @@
+#Phân tích yếu tố nguy cơ và mối quan hệ tiền sử bệnh lý với biến chứng nhồi máu cơ tim
+
 import pandas as pd
 import numpy as np
 import os
