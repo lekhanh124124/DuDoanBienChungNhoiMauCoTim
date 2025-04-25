@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
 import os
-from sklearn.impute import SimpleImputer
+from sklearn.impute import SimpleImputer, KNNImputer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.compose import ColumnTransformer
+import joblib
 
 # Đặt thư mục làm việc là thư mục chứa file mã
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -73,6 +76,71 @@ print(f"Số mẫu Switzerland: {len(dataframes['switzerland'])}")
 print(f"Số mẫu VA: {len(dataframes['va'])}")
 print(f"Tổng số mẫu: {len(combined_data)}")
 
-# Bước 5: Lưu kết quả vào file processed_data.csv
+# Bước 5: Áp dụng KNN imputation (phương pháp thay thế) cho dữ liệu số
+print("\nPhương pháp thay thế: KNN imputation cho dữ liệu số")
+# Lưu bản sao dữ liệu đã xử lý bằng phương pháp median để so sánh
+median_imputed_data = combined_data.copy()
+median_imputed_data.to_csv(r'..\data\processed\median_imputed_data.csv', index=False)
+
+# Áp dụng KNN imputation
+knn_imputer = KNNImputer(n_neighbors=5)
+combined_data[numerical_cols] = knn_imputer.fit_transform(combined_data[numerical_cols])
+print("Đã áp dụng KNN imputation cho các cột số")
+
+# Lưu mô hình KNN imputer để sử dụng lại sau này
+os.makedirs(r'..\models', exist_ok=True)
+joblib.dump(knn_imputer, r'..\models\knn_imputer.pkl')
+
+# Bước 6: Chuẩn hóa dữ liệu
+# 6.1: Scaling dữ liệu số
+scaler = StandardScaler()
+combined_data[numerical_cols] = scaler.fit_transform(combined_data[numerical_cols])
+print("\nĐã chuẩn hóa dữ liệu số bằng StandardScaler")
+
+# Lưu scaler để sử dụng lại sau này
+joblib.dump(scaler, r'..\models\standard_scaler.pkl')
+
+# 6.2: Xử lý các cột phân loại - chuyển đổi tất cả về chuỗi
+categorical_features_to_encode = [col for col in categorical_cols if col != 'num']
+print("\nChuyển đổi cột phân loại về kiểu dữ liệu chuỗi...")
+
+# Đảm bảo tất cả giá trị phân loại đều là kiểu chuỗi
+for col in categorical_features_to_encode:
+    combined_data[col] = combined_data[col].astype(str)
+    print(f"Cột {col} đã chuyển thành kiểu chuỗi")
+
+# One-hot encoding cho các biến phân loại
+print("\nÁp dụng One-Hot Encoding cho các biến phân loại...")
+encoder = OneHotEncoder(sparse_output=False, drop='first')
+encoded_categorical = encoder.fit_transform(combined_data[categorical_features_to_encode])
+
+# Tạo DataFrame mới với tên cột sau khi encoding
+encoded_feature_names = []
+for i, feature in enumerate(categorical_features_to_encode):
+    categories = encoder.categories_[i][1:]  # Drop first category
+    for category in categories:
+        encoded_feature_names.append(f"{feature}_{category}")
+
+encoded_df = pd.DataFrame(encoded_categorical, columns=encoded_feature_names)
+print(f"Đã mã hóa {len(categorical_features_to_encode)} cột thành {encoded_df.shape[1]} đặc trưng")
+
+# Kết hợp dữ liệu đã chuẩn hóa
+combined_data_scaled = pd.concat([
+    pd.DataFrame(combined_data[numerical_cols], columns=numerical_cols),
+    encoded_df,
+    pd.DataFrame(combined_data['num'], columns=['num'])
+], axis=1)
+
+print(f"Dữ liệu sau khi chuẩn hóa có {combined_data_scaled.shape[1]} cột")
+
+# Lưu encoder để sử dụng lại sau này
+joblib.dump(encoder, r'..\models\one_hot_encoder.pkl')
+
+# Bước 7: Lưu kết quả vào file processed_data_scaled.csv
+scaled_output_path = r'..\data\processed\processed_data_scaled.csv'
+combined_data_scaled.to_csv(scaled_output_path, index=False)
+print(f"\nDữ liệu đã được chuẩn hóa và lưu vào: {scaled_output_path}")
+
+# Lưu kết quả gốc vào file processed_data.csv (không chuẩn hóa)
 combined_data.to_csv(output_path, index=False)
-print(f"Dữ liệu đã được lưu vào: {output_path}")
+print(f"Dữ liệu gốc đã được lưu vào: {output_path}")
