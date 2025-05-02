@@ -32,23 +32,23 @@ Bộ dữ liệu được sử dụng là **UCI Heart Disease Dataset** (process
 - Các cột phân loại (`sex`, `cp`, `fbs`, `restecg`, `exang`, `slope`, `ca`, `thal`) sẽ được mã hóa (encoding) trong quá trình tiền xử lý dữ liệu.
 - Các cột số (`age`, `trestbps`, `chol`, `thalach`, `oldpeak`) sẽ được chuẩn hóa (scaling) để đảm bảo tính đồng nhất.
 
-
-# /data/ là nơi chứa bộ dữ liệu
+## MÔ TẢ CÁC FOLDER
+### /data/ là nơi chứa bộ dữ liệu
     -   /raw chứa bộ dữ liệu lấy từ heart+disease.zip
     -   /processed chứa bộ dữ liệu được gộp và tiền xử lí từ /raw
 
-# /src/ là nơi chứa code cho các nhiệm vụ chính
+### /src/ là nơi chứa code cho các nhiệm vụ chính
     -   data_preprocessing.py: mục đích là xử lý dữ liệu thiếu và tổng hợp các dữ liệu lại
 
-# /reports/ là nơi chứa word và ppt đã được tổng hợp và sẽ dùng để trình bày.
+### /reports/ là nơi chứa word và ppt đã được tổng hợp và sẽ dùng để trình bày.
 
-# /figures/ là nơi chứa các hình ảnh được tạo từ code.
+### /figures/ là nơi chứa các hình ảnh được tạo từ code.
     - correlation_heatmap: Biểu đồ heatmap tương quan giữa các biến.
     - model_performance: Biểu đồ ROC-AUC hoặc confusion matrix của các mô hình.
     - risk_factor_analysis: Biểu đồ phân tích yếu tố nguy cơ (ví dụ: boxplot tuổi/giới tính).
     - bla bla
 
-# /models/ Chứa các mô hình đã huấn luyện (tùy chọn).
-    - logistic_regression_model: Mô hình Logistic Regression lưu bằng joblib/pickle.
+### /models/ Chứa các mô hình đã huấn luyện (tùy chọn).
+    - logistic_regression_model: Mô hình Logistic Regression.
     - svm_model: Mô hình SVM.
     - random_forest_model: Mô hình Random Forest.
