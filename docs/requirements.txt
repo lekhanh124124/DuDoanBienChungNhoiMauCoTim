@@ -5,3 +5,4 @@ seaborn
 scipy
 numpy
 statsmodels
+imbalanced-learn
