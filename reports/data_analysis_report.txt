@@ -1,0 +1,167 @@
+=======================================================================
+BÁO CÁO PHÂN TÍCH DỮ LIỆU VỀ DỰ ĐOÁN BIẾN CHỨNG NHỒI MÁU CƠ TIM
+=======================================================================
+Ngày: 04/05/2025
+Tác giả: Phân tích viên dữ liệu
+
+I. GIỚI THIỆU
+=============
+Báo cáo này trình bày kết quả phân tích dữ liệu về dự đoán biến chứng nhồi máu cơ tim, bao gồm:
+- Phân tích khám phá dữ liệu (EDA) và thống kê mô tả
+- Phân tích tương quan giữa các đặc trưng với biến chứng
+- Đánh giá hiệu suất các mô hình dự đoán
+- Phân tích tác động của thuốc lên biến chứng nhồi máu cơ tim
+- Xác định yếu tố nguy cơ và tầm quan trọng của từng đặc trưng
+
+Dữ liệu được thu thập từ nhiều nguồn, bao gồm Cleveland, Hungary, Switzerland và VA, với tổng cộng 920 bệnh nhân.
+
+II. PHÂN TÍCH KHÁM PHÁ DỮ LIỆU
+============================
+
+1. Đặc trưng số
+---------------
+Dữ liệu bao gồm các đặc trưng số quan trọng sau:
+- age: Tuổi của bệnh nhân
+- trestbps: Huyết áp tâm thu khi nghỉ ngơi
+- chol: Mức cholesterol trong máu
+- thalach: Nhịp tim tối đa đạt được
+- oldpeak: Chênh lệch đoạn ST sau gắng sức so với lúc nghỉ ngơi
+
+Phân tích cho thấy có sự khác biệt đáng kể về các chỉ số này giữa nhóm có biến chứng và không có biến chứng:
+- Bệnh nhân cao tuổi có nguy cơ biến chứng cao hơn
+- Giá trị oldpeak (chênh lệch ST) cao liên quan đến tỷ lệ biến chứng cao hơn
+- Nhịp tim tối đa (thalach) thấp liên quan đến nguy cơ biến chứng cao hơn
+
+2. Đặc trưng phân loại
+---------------------
+Các đặc trưng phân loại quan trọng bao gồm:
+- sex (giới tính): 0 = nữ, 1 = nam
+- cp (loại đau thắt ngực): 1 = đau thắt ngực điển hình, 2 = đau thắt ngực không điển hình, 
+                           3 = đau không do tim, 4 = không có triệu chứng
+- fbs (đường huyết lúc đói > 120 mg/dl): 0 = không, 1 = có
+- restecg (kết quả điện tâm đồ lúc nghỉ): 0 = bình thường, 1 = có bất thường sóng ST-T, 
+                                         2 = phì đại thất trái
+- exang (đau thắt ngực khi gắng sức): 0 = không, 1 = có
+- slope (độ dốc đoạn ST khi gắng sức): 1 = đi lên, 2 = phẳng, 3 = đi xuống
+- ca (số mạch máu chính bị tổn thương): 0-3
+- thal (rối loạn máu): 3 = bình thường, 6 = khiếm khuyết cố định, 7 = khiếm khuyết có thể đảo ngược
+
+Phân tích cho thấy:
+- Nam giới có tỷ lệ biến chứng cao hơn nữ giới (63,2% so với 25,8%)
+- Bệnh nhân không có triệu chứng đau thắt ngực (cp = 4) có tỷ lệ biến chứng cao nhất (79,0%)
+- Bệnh nhân có đau thắt ngực khi gắng sức (exang = 1) có nguy cơ biến chứng cao hơn (81,0% so với 36,4%)
+- Số lượng mạch máu chính bị tổn thương (ca) có mối tương quan mạnh với tỷ lệ biến chứng, 
+  với ca = 3 có tỷ lệ biến chứng lên tới 85,0%
+
+III. PHÂN TÍCH TÁC ĐỘNG CỦA THUỐC
+===============================
+
+1. Tổng quan về tác động của thuốc
+--------------------------------
+Phân tích tác động của thuốc cho thấy những kết quả quan trọng về mối liên hệ giữa việc sử dụng thuốc và biến chứng nhồi máu cơ tim:
+
+a) Thuốc chẹn beta:
+- Tỷ lệ biến chứng ở nhóm dùng thuốc: 72,1%
+- Tỷ lệ biến chứng ở nhóm không dùng thuốc: 38,7%
+- Odds Ratio: 4,08 (95% CI: 3,09-5,38)
+- P-value: 5,86e-24 (có ý nghĩa thống kê)
+- Kết luận: Thuốc chẹn beta có mối liên hệ đáng kể với tỷ lệ biến chứng cao hơn, 
+  nhưng điều này có thể do hiệu ứng "chỉ định ngược" (sicker patients receive treatment)
+
+b) Statin (thuốc hạ cholesterol):
+- Tỷ lệ biến chứng ở nhóm dùng thuốc: 59,6%
+- Tỷ lệ biến chứng ở nhóm không dùng thuốc: 51,1%
+- Odds Ratio: 1,41 (95% CI: 1,09-1,83)
+- P-value: 0,0117 (có ý nghĩa thống kê)
+- Kết luận: Statin cũng cho thấy mối liên hệ với tỷ lệ biến chứng cao hơn một chút, 
+  tuy nhiên chênh lệch nhỏ hơn so với thuốc chẹn beta
+
+c) Nitrate và thuốc chống kết tập tiểu cầu:
+- Không có đủ dữ liệu để phân tích (0 bệnh nhân trong nhóm sử dụng)
+
+d) Bất kỳ loại thuốc nào:
+- Tỷ lệ biến chứng ở nhóm dùng thuốc: 61,8%
+- Tỷ lệ biến chứng ở nhóm không dùng thuốc: 39,1%
+- Odds Ratio: 2,52 (95% CI: 1,88-3,38)
+- P-value: 7,09e-10 (có ý nghĩa thống kê)
+
+2. Tương tác giữa thuốc và các yếu tố khác
+----------------------------------------
+Phân tích tương tác cho thấy tác động của thuốc thay đổi theo các nhóm bệnh nhân khác nhau:
+
+a) Thuốc chẹn beta:
+- Tác động mạnh hơn ở nam giới (tăng tỷ lệ biến chứng 77,8% so với 45,6%)
+- Ở bệnh nhân có nhiều mạch máu bị tổn thương (ca = 3), tỷ lệ biến chứng lên tới 100% 
+  khi sử dụng thuốc chẹn beta
+- Bệnh nhân có điện tâm đồ bất thường (restecg > 0) và sử dụng thuốc chẹn beta 
+  có tỷ lệ biến chứng cao hơn
+
+b) Statin:
+- Hiệu ứng ít tương tác hơn với các biến khác
+- Ở bệnh nhân có đau thắt ngực không điển hình (cp = 2), statin cho thấy tác động tích cực, 
+  giảm tỷ lệ biến chứng (7,1% so với 18,3%)
+
+IV. HIỆU SUẤT MÔ HÌNH DỰ ĐOÁN
+============================
+
+1. Mô hình SVM (Support Vector Machine)
+-------------------------------------
+- Độ chính xác (Accuracy): 81,7%
+- Độ nhạy (Sensitivity): 82,5%
+- Độ đặc hiệu (Specificity): 80,8%
+- Diện tích dưới đường cong ROC (AUC): 0,872
+- F1-Score: 0,830
+
+2. Mô hình Random Forest
+----------------------
+- Độ chính xác (Accuracy): 79,9%
+- Độ nhạy (Sensitivity): 80,1%
+- Độ đặc hiệu (Specificity): 79,7%
+- Diện tích dưới đường cong ROC (AUC): 0,858
+- F1-Score: 0,815
+
+3. Tầm quan trọng của các đặc trưng
+--------------------------------
+Phân tích tầm quan trọng của đặc trưng cho thấy:
+- ca (số mạch máu chính bị tổn thương): Yếu tố quan trọng nhất
+- thal (rối loạn máu): Yếu tố quan trọng thứ hai
+- exang (đau thắt ngực khi gắng sức): Yếu tố quan trọng thứ ba
+- oldpeak (chênh lệch đoạn ST): Yếu tố số quan trọng nhất
+- thalach (nhịp tim tối đa): Yếu tố số quan trọng thứ hai
+
+V. KẾT LUẬN VÀ ĐỀ XUẤT
+=====================
+
+1. Kết luận chính
+---------------
+- Các yếu tố nguy cơ cao nhất cho biến chứng nhồi máu cơ tim bao gồm: số mạch máu chính 
+  bị tổn thương, đau thắt ngực khi gắng sức, rối loạn máu, và chênh lệch đoạn ST.
+- Nam giới có nguy cơ biến chứng cao hơn nữ giới đáng kể.
+- Thuốc điều trị (chẹn beta, statin) có mối liên hệ với tỷ lệ biến chứng cao hơn, 
+  nhưng điều này có thể phần lớn do hiệu ứng "chỉ định ngược" 
+  (bệnh nhân nặng hơn được cho dùng thuốc).
+- Mô hình SVM cho hiệu suất dự đoán tốt nhất với độ chính xác 81,7%.
+
+2. Đề xuất
+--------
+a) Thực hành lâm sàng:
+- Chú ý đặc biệt đến bệnh nhân có nhiều mạch máu chính bị tổn thương và 
+  đau thắt ngực khi gắng sức.
+- Cá nhân hóa phác đồ điều trị dựa trên các yếu tố nguy cơ của bệnh nhân.
+- Theo dõi chặt chẽ hơn ở nam giới và bệnh nhân lớn tuổi.
+
+b) Nghiên cứu tiếp theo:
+- Cần có các nghiên cứu tiến cứu để đánh giá chính xác hơn tác động của thuốc.
+- Phát triển hệ thống điểm nguy cơ dựa trên các yếu tố nguy cơ quan trọng đã xác định.
+- Thu thập thêm dữ liệu về liều lượng thuốc và thời gian sử dụng để phân tích chi tiết hơn.
+- Nghiên cứu về tương tác giữa các loại thuốc và tác động của liệu pháp kết hợp.
+
+c) Ứng dụng mô hình:
+- Tích hợp mô hình SVM vào hệ thống hỗ trợ quyết định lâm sàng.
+- Phát triển công cụ dự đoán nguy cơ dành cho bác sĩ lâm sàng.
+- Tùy chỉnh ngưỡng dự đoán dựa trên đối tượng bệnh nhân cụ thể.
+
+=======================================================================
+KẾT THÚC BÁO CÁO
+=======================================================================
+
