@@ -1,0 +1,105 @@
+# BÁO CÁO MÔ HÌNH SVM CHO DỰ ĐOÁN BIẾN CHỨNG NHỒI MÁU CƠ TIM
+
+## 1. Giới thiệu
+
+Support Vector Machine (SVM) là một kỹ thuật học máy có giám sát được sử dụng trong phân loại và hồi quy. Trong dự án này, SVM được áp dụng để dự đoán biến chứng nhồi máu cơ tim dựa trên các đặc trưng lâm sàng của bệnh nhân. Báo cáo này trình bày chi tiết về quá trình xây dựng, huấn luyện và đánh giá mô hình SVM.
+
+## 2. Dữ liệu
+
+### 2.1. Nguồn dữ liệu và tiền xử lý
+- Dữ liệu được thu thập từ 4 nguồn khác nhau: Cleveland, Hungary, Switzerland và VA
+- Tổng số mẫu: 920 bệnh nhân với 42 đặc trưng
+- Dữ liệu đã được tiền xử lý, bao gồm:
+  - Xử lý giá trị thiếu sử dụng KNN Imputation
+  - Chuẩn hóa dữ liệu số với StandardScaler
+  - Mã hóa one-hot cho các biến phân loại
+  - Chuyển đổi biến mục tiêu thành nhị phân: 0 (không biến chứng) và 1 (có biến chứng)
+
+### 2.2. Phân chia dữ liệu
+- Tập huấn luyện: 736 mẫu (80%)
+- Tập kiểm tra: 184 mẫu (20%)
+- Phân tầng được áp dụng để đảm bảo phân bố nhãn tương tự giữa hai tập
+
+### 2.3. Đặc điểm phân bố
+- Phân bố nhãn: 509 ca có biến chứng (55.3%), 411 ca không có biến chứng (44.7%)
+
+## 3. Phương pháp
+
+### 3.1. Tối ưu hóa siêu tham số
+- Phương pháp: Grid Search với 5-fold cross-validation
+- Độ đo tối ưu: ROC-AUC
+- Các tham số được tìm kiếm:
+  - C: [0.1, 1, 10, 100]
+  - gamma: ['scale', 'auto', 0.1, 0.01, 0.001]
+  - kernel: ['rbf', 'poly', 'sigmoid']
+
+### 3.2. Mô hình cuối cùng
+- Kernel: Radial Basis Function (RBF)
+- Hệ số C: 10 (điều chỉnh mức phạt cho điểm phân loại sai)
+- Gamma: 0.01 (điều chỉnh mức độ ảnh hưởng của từng mẫu huấn luyện)
+- Xác suất: True (cho phép ước lượng xác suất)
+
+## 4. Kết quả đánh giá
+
+### 4.1. Độ chính xác tổng thể
+
+| Độ đo     | Giá trị |
+|-----------|---------|
+| Accuracy  | 84.78%  |
+| Precision | 84.91%  |
+| Recall    | 88.24%  |
+| F1-score  | 86.54%  |
+| ROC-AUC   | 92.59%  |
+
+### 4.2. Ma trận nhầm lẫn
+
+|                    | Dự đoán không biến chứng | Dự đoán có biến chứng |
+|--------------------|--------------------------|------------------------|
+| Thực không biến chứng | 66 (TN)                 | 16 (FP)                |
+| Thực có biến chứng   | 12 (FN)                 | 90 (TP)                |
+
+- True Negative (TN): 66 ca - Dự đoán đúng là không có biến chứng
+- False Positive (FP): 16 ca - Dự đoán sai là có biến chứng khi thực tế không có
+- False Negative (FN): 12 ca - Dự đoán sai là không có biến chứng khi thực tế có
+- True Positive (TP): 90 ca - Dự đoán đúng là có biến chứng
+
+### 4.3. Đường cong ROC
+- Diện tích dưới đường cong (AUC): 0.9259
+- Đường cong ROC cho thấy khả năng phân biệt tốt giữa các trường hợp dương tính và âm tính
+
+## 5. Phân tích kết quả
+
+### 5.1. Điểm mạnh của mô hình
+- Độ nhạy (recall) cao (88.24%): Khả năng phát hiện tốt các trường hợp có biến chứng
+- ROC-AUC cao (92.59%): Khả năng phân biệt tốt giữa hai lớp
+- Cân bằng tốt giữa precision và recall (F1-score = 86.54%)
+
+### 5.2. Hạn chế
+- 16 trường hợp False Positive (báo động sai) có thể dẫn đến can thiệp y tế không cần thiết
+- 12 trường hợp False Negative có thể bỏ sót bệnh nhân có nguy cơ cao, cần theo dõi
+
+### 5.3. So sánh với các mô hình khác
+Mô hình SVM có hiệu suất cao và cân bằng trong phân loại biến chứng nhồi máu cơ tim. So sánh chi tiết hơn với các mô hình hồi quy Logistic và Random Forest sẽ được thực hiện trong báo cáo so sánh các mô hình.
+
+## 6. Kết luận và hướng phát triển
+
+### 6.1. Kết luận
+- Mô hình SVM với kernel RBF và tham số tối ưu (C=10, gamma=0.01) cho kết quả dự đoán tốt với độ chính xác tổng thể 84.78% và AUC 92.59%
+- Mô hình có độ nhạy cao, phù hợp cho mục đích sàng lọc ban đầu để xác định bệnh nhân có nguy cơ biến chứng
+- Thông tin từ mô hình có thể hỗ trợ quyết định lâm sàng trong việc theo dõi và can thiệp cho bệnh nhân
+
+### 6.2. Hướng phát triển
+- Tích hợp thêm đặc trưng bổ sung như thời gian theo dõi, tiền sử gia đình, và các xét nghiệm sinh hóa khác
+- Điều chỉnh tham số trọng số cho các lớp để tối ưu hóa cho các kịch bản lâm sàng khác nhau
+- Kết hợp SVM với các kỹ thuật giảm chiều dữ liệu như PCA hoặc lựa chọn đặc trưng để cải thiện hiệu suất và giảm độ phức tạp
+- Áp dụng kỹ thuật tập hợp (ensemble) kết hợp SVM với các mô hình khác để cải thiện độ chính xác dự đoán
+
+## 7. Tài liệu tham khảo
+
+1. Cristianini, N., & Shawe-Taylor, J. (2000). An Introduction to Support Vector Machines and Other Kernel-based Learning Methods. Cambridge University Press.
+
+2. Vapnik, V. (1995). The Nature of Statistical Learning Theory. Springer Science & Business Media.
+
+3. Cortes, C., & Vapnik, V. (1995). Support-vector networks. Machine Learning, 20(3), 273-297.
+
+4. Tsipouras, M. G., Exarchos, T. P., Fotiadis, D. I., Kotsia, A. P., Vakalis, K. V., Naka, K. K., & Michalis, L. K. (2008). Automated diagnosis of coronary artery disease based on data mining and fuzzy modeling. IEEE Transactions on Information Technology in Biomedicine, 12(4), 447-458.

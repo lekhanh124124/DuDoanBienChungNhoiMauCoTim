@@ -1,0 +1,6 @@
+Medication,With Medication,Complication Rate (With Med),Without Medication,Complication Rate (Without Med),Odds Ratio,CI Lower,CI Upper,p-value,Significant
+Thuốc chẹn beta,458 patients,72.1%,462 patients,38.7%,4.076030027932961,3.0900719908271412,5.376580493247337,5.8632240450436755e-24,True
+Statin,460 patients,59.6%,460 patients,51.1%,1.4104323953328757,1.0864828385022725,1.8309718950984357,0.011736031426213763,True
+Nitrate,0 patients,0.0%,920 patients,55.3%,,,,,
+Thuốc chống kết tập tiểu cầu,0 patients,0.0%,920 patients,55.3%,,,,,
+Bất kỳ thuốc nào,659 patients,61.8%,261 patients,39.1%,2.517623716153128,1.87609921445202,3.3785149139823307,7.091952991387492e-10,True
